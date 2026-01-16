@@ -1,30 +1,33 @@
 package com.rose.bandle_portfolio.controller;
-
 import com.rose.bandle_portfolio.model.Rating;
-import com.rose.bandle_portfolio.model.Song;
-import com.rose.bandle_portfolio.repository.RatingRepository;
-import com.rose.bandle_portfolio.repository.SongRepository;
+import com.rose.bandle_portfolio.service.RatingService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("api/rating")
+@RequestMapping("api/songs/{songId}/ratings")
+@CrossOrigin(origins = "http://localhost:3000")
 
 public class RatingController {
-    private final RatingRepository ratingRepository;
-    private final SongRepository songRepository;
+    private final RatingService ratingService;
 
-    public RatingController(RatingRepository ratingRepository, SongRepository songRepository) {
-        this.ratingRepository = ratingRepository;
-        this.songRepository = songRepository;
+    public RatingController(RatingService ratingService) {
+        this.ratingService = ratingService;
     }
 
-    @PostMapping("/songId")
+    @GetMapping
+    public List<Rating> getRatings(@PathVariable int songId){
+        return ratingService.getRatingBySongId(songId);
+    }
+
+    @PostMapping
     public Rating addRating(@PathVariable int songId, @RequestBody Rating rating){
-        Song song = songRepository.findById(songId)
-                .orElseThrow(() -> new RuntimeException("Song not found."));
+        return ratingService.addRating(songId, rating);
+    }
 
-        rating.setSong(song);
-
-        return ratingRepository.save(rating);
+    @GetMapping("/average")
+    public double getAverage(@PathVariable int songId){
+        return ratingService.getAverageRating(songId);
     }
 }

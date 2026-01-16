@@ -4,34 +4,27 @@ import com.rose.bandle_portfolio.model.Song;
 import com.rose.bandle_portfolio.model.Youtube;
 import com.rose.bandle_portfolio.repository.SongRepository;
 import com.rose.bandle_portfolio.repository.YoutubeRepository;
+import com.rose.bandle_portfolio.service.YoutubeService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("api/youtube")
+@RequestMapping("api/songs/{songId}/youtube")
+@CrossOrigin(origins = "http://localhost:3000")
 
 public class YoutubeController {
-    private final YoutubeRepository youtubeRepository;
-    private final SongRepository songRepository;
+    private final YoutubeService youtubeService;
 
-    public YoutubeController(YoutubeRepository youtubeRepository, SongRepository songRepository) {
-        this.youtubeRepository = youtubeRepository;
-        this.songRepository = songRepository;
+    public YoutubeController(YoutubeService youtubeService) {
+        this.youtubeService = youtubeService;
     }
 
-    @PostMapping("/{songId}")
-    public Youtube addYoutube(@PathVariable int songId, @RequestBody Youtube youtube) {
-        Song song = songRepository.findById(songId)
-                .orElseThrow(() -> new RuntimeException("Song not found"));
-
-        youtube.setSong(song);
-        return youtubeRepository.save(youtube);
+    @GetMapping
+    public Youtube getYoutube(@PathVariable int songId){
+        return youtubeService.getBySong(songId);
     }
 
-    @GetMapping("/{songId}")
-    public Youtube getYoutube(@PathVariable int songId) {
-        return (Youtube) youtubeRepository.findBySongSongId(songId);
-
+    @PostMapping
+    public Youtube addYoutube(@PathVariable int songId, @RequestBody Youtube youtube){
+        return youtubeService.addYoutube(songId, youtube);
     }
-
-
 }

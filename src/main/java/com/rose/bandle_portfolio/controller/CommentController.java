@@ -1,39 +1,26 @@
 package com.rose.bandle_portfolio.controller;
-
 import com.rose.bandle_portfolio.model.Comment;
-import com.rose.bandle_portfolio.model.Song;
-import com.rose.bandle_portfolio.repository.CommentRepository;
-import com.rose.bandle_portfolio.repository.SongRepository;
+import com.rose.bandle_portfolio.service.CommentService;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/comment")
+@RequestMapping("api/songs/{songId}/comments")
+@CrossOrigin(origins = "http://localhost:3000")
 
 public class CommentController {
-    private final CommentRepository commentRepository;
-    private final SongRepository songRepository;
+    private final CommentService commentService;
 
-    public CommentController(CommentRepository commentRepository, SongRepository songRepository) {
-        this.commentRepository = commentRepository;
-        this.songRepository = songRepository;
+    public CommentController(CommentService commentService) {
+        this.commentService = commentService;
+    }
+    @GetMapping
+    public List<Comment>getComments(@PathVariable int songId){
+        return commentService.getCommentBySongId(songId);
     }
 
-    @PostMapping("/songId")
+    @PostMapping
     public Comment addComment(@PathVariable int songId, @RequestBody Comment comment){
-        Song song = songRepository.findById(songId)
-                .orElseThrow(()-> new RuntimeException("Song not found."));
-
-        comment.setSong(song);
-        comment.setCreatedAt(LocalDateTime.now());
-
-        return commentRepository.save(comment);
-    }
-
-    @GetMapping("/songId")
-    public List<Comment> getComments(@PathVariable int songId){
-        return commentRepository.findBySongSongIdOrderByCreatedAtDesc(songId);
+        return commentService.addComment(songId, comment);
     }
 }

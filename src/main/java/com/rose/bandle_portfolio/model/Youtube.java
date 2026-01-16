@@ -17,6 +17,27 @@ public class Youtube {
     @JoinColumn(name = "song_id")
     private Song song;
 
+    public Integer getYoutubeId() {
+        return youtubeId;
+    }
+
+    public void setYoutubeId(Integer youtubeId) {
+        this.youtubeId = youtubeId;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
+    }
+
+    public Song getSong() {
+        return song;
+    }
+
     public void setSong(Song song) {
+        this.song = song;
     }
 }
